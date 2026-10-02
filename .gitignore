@@ -1,0 +1,19 @@
+.venv/
+
+# MongoDB data files (bind-mounted into the mongo container)
+src/db/
+# Temp folder mounted into the api container
+src/tmp/
+# SQLite file that Django creates from DATABASES. The app stores no data in it.
+src/rest/mydatabase
+
+# Python
+__pycache__/
+*.pyc
+
+# Frontend tool caches
+.eslintcache
+
+# Local tool output
+.playwright-mcp/
+.claude/
