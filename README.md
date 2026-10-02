@@ -66,3 +66,25 @@ When you run `localhost:3000`, you would see 2 things:
    * https://kinsta.com/blog/python-object-oriented-programming/
    * https://realpython.com/solid-principles-python/
    * https://www.toptal.com/python/python-design-patterns
+
+
+# Solution notes
+
+## Changes to the Docker setup
+The original setup did not build on the current base images. These changes make it build without bypassing Docker:
+
+| Change | Reason |
+|---|---|
+| `mongo` uses the official `mongo:4.4` image | The original Dockerfile installed MongoDB 4.4 from the Debian *buster* apt repository. That install fails on the current `python:3.8` base image, which is Debian *bookworm*. |
+| `easy_install pip` removed | The `python:3.8` image already includes pip, and current setuptools no longer has `easy_install`. |
+| Node 16 binary copied from `node:16-bookworm-slim` | `react-scripts` 4.0.1 does not start on Node 17 or newer. Only `node` is copied; the app uses yarn, not npm. |
+| `pandas` 1.1.2 → 1.3.5 | pandas 1.1.2 has no prebuilt wheel for Python 3.8 on `aarch64` (Apple Silicon), so pip tried to compile it from source. 1.3.5 has the wheel. |
+| `api` and `app` share one image, `adbrew-test` | Both services ran the same Dockerfile, so Compose built and stored two copies. |
+| `links` replaced by `depends_on` | `links` is deprecated. Compose's default network already resolves the host name `mongo`. |
+
+## Run the tests
+```
+docker exec api bash -c "cd /src/rest && python manage.py test"
+docker exec app bash -c "cd /src/app && CI=true yarn test --watchAll=false"
+```
+The backend tests use an in-memory fake of the MongoDB wrapper, so they do not need data in Mongo.
