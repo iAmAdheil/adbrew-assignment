@@ -128,6 +128,7 @@ REST_FRAMEWORK = {
     # other settings...
     'DEFAULT_AUTHENTICATION_CLASSES': [],
     'DEFAULT_PERMISSION_CLASSES': [],
+    'EXCEPTION_HANDLER': 'rest.exceptions.api_exception_handler',
 }
 
 
